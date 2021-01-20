@@ -77,8 +77,7 @@ class _AccountPageState extends State<AccountPage> {
 
   Future updateName() async{
     EntryDialog nameDialog = new EntryDialog(context);
-    await nameDialog.showEntryDialog("Name update", "Please enter your new name", "Name", "", "Validate");
-    String name = nameDialog.dialogResult;
+    String name = await nameDialog.showEntryDialog("Name update", "Please enter your new name", "Name", "", "Validate");
 
     if(name != null && name != ""){
       user.updateProfile(displayName: name);
@@ -87,8 +86,7 @@ class _AccountPageState extends State<AccountPage> {
 
   Future updateEmail() async{
     EntryDialog emailDialog = new EntryDialog(context);
-    await emailDialog.showEntryDialog("Email update", "Please enter your new E-Mail address", "E-mail", "", "Validate");
-    String email = emailDialog.dialogResult;
+    String email = await emailDialog.showEntryDialog("Email update", "Please enter your new E-Mail address", "E-mail", "", "Validate");
 
     if(email != null && email.isNotEmpty && email.contains('@')){
       user.verifyBeforeUpdateEmail(email);

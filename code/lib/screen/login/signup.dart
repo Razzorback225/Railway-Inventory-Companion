@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../dialog/dialog.dart';
@@ -127,13 +129,14 @@ class _SignUpPageState extends State<SignUpPage>{
         await auth.createUserWithEmailAndPassword(
           email: usernameCtrlr.text, 
           password: passwordCtrlr.text
-          ).then((_){
+          ).then((_)async{
             User user = auth.currentUser;
             user.sendEmailVerification();
             MessageDialog popup = new MessageDialog(context);
-            popup.showMessageDialog('Check your mails', 'An email has been sent to ${user.email}.\nPlease verify this email to connect to the app');
-            Route vRoute = MaterialPageRoute(builder: (context) => LoginPage());
-            Navigator.of(context).pushReplacement(vRoute);          
+            await popup.showMessageDialog('Check your mails', 'An email has been sent to ${user.email}.\nPlease verify this email to connect to the app').then((_) {
+              Route vRoute = MaterialPageRoute(builder: (context) => LoginPage());
+              Navigator.of(context).pushReplacement(vRoute);          
+            });
           });      
       }
       on FirebaseAuthException catch(e) {

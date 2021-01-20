@@ -5,9 +5,7 @@ class MessageDialog {
 
   MessageDialog(this.context);
 
-  Map<String, String> error = new Map();
-
-  Future<void> showMessageDialog(String title, String message) async {
+  Future<void> showMessageDialog(String title, String message) async{
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -40,15 +38,9 @@ class MessageDialog {
 class EntryDialog {
   BuildContext ctxt;
 
-  String _entryResult;
-
-  String get dialogResult {
-    return _entryResult;
-  }
-
   EntryDialog(this.ctxt);
 
-  Future<String> showEntryDialog(String title, String message, String entryLabel, String entryHint, String buttonText){
+  Future<String> showEntryDialog(String title, String message, String entryLabel, String entryHint, String buttonText) async{
     
     final textFieldCtrlr = TextEditingController();
     
@@ -78,8 +70,7 @@ class EntryDialog {
             TextButton(
               child: Text(buttonText),
               onPressed: () {
-                this._entryResult = textFieldCtrlr.text;
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(textFieldCtrlr.text);
               },
             ),
           ],

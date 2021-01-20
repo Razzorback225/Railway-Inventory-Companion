@@ -7,6 +7,22 @@ class Firebase {
   User user = FirebaseAuth.instance.currentUser;
   final databaseReference = FirebaseDatabase.instance.reference();
 
+  Future<bool> checkRootExist() async {
+    //TODO : Add root checking verification
+    await databaseReference.child(user.uid).once().then((DataSnapshot snapshot){
+      if(snapshot.value != null){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+  }
+
+  Future<void> createRoot() async {
+    await databaseReference.child(user.uid).set("Marklin");
+  }
+
   Future<List<Rail>> readInventory(String gauge) async{
     List<Rail> items = [];
     List typeList = ["M-Track","C-Track","K-Track"];
@@ -19,9 +35,15 @@ class Firebase {
             
             for (String part in buffer.keys) {
                 items.add(Rail(part, gauge, trackType, buffer[part].toString()));
-            }      
+            }
           }
         });
+      }
+      if(items.length > 0){
+        return items;
+      }
+      else {
+        return null;
       }
     }
     else{
@@ -31,12 +53,14 @@ class Firebase {
           
           for (String part in buffer.keys) {
               items.add(Rail(part, gauge, "N/A", buffer[part].toString()));
-          }  
+          } 
+          return items; 
+        }
+        else {
+          return null;
         }
       });
     }
-
-    return items;
   }
 
   void pushNR(String partNumber, String gauge, int quantity, String trackType){

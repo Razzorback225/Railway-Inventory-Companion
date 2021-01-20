@@ -4,6 +4,7 @@ import '../home.dart';
 import 'signup.dart';
 import '../dialog/dialog.dart';
 import 'dart:async';
+import '../../firebase.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
@@ -106,39 +107,47 @@ class _LoginPageState extends State<LoginPage>{
   Future _loginBtn_pressed() async{
     FirebaseAuth auth = FirebaseAuth.instance;
     MessageDialog errorDialog = new MessageDialog(context);
+    Route route =  new MaterialPageRoute(builder: (context) => new HomePage());
     //User user = auth.currentUser;
     try {
       if(user == null){
         UserCredential creds = await auth.signInWithEmailAndPassword(email: usernameCtrlr.text, password: passwordCtrlr.text);
 
         if(creds != null){
-          User user = auth.currentUser;
+          user = auth.currentUser;
           if (!user.emailVerified) {
             errorDialog.showMessageDialog("Email not yet verified", "Please verified your email before signing in");
           }
           else{
             if(user.displayName != null){
-              Route route =  new MaterialPageRoute(builder: (context) => new HomePage());
-              Navigator.push(context,route);
+              goToHome(route);
             }
             else{
               EntryDialog nameDialog = new EntryDialog(context);
-              await nameDialog.showEntryDialog("Full name (optionnal)", "If you want you can provide your full name.\nThis will help us to know who you are", "Full name","John Doe", "Ok");
-              String name = nameDialog.dialogResult;
+              String name = await nameDialog.showEntryDialog("Full name (optionnal)", "If you want you can provide your full name.\nThis will help us to know who you are", "Full name","John Doe", "Ok");
               if(name.isNotEmpty){
                 user.updateProfile(
                   displayName: name
                 );
               }
-              Route route =  new MaterialPageRoute(builder: (context) => new HomePage());
-              Navigator.push(context,route);
+              /*
+              Firebase fb = new Firebase();
+              if(await fb.checkRootExist()){
+                print("Root exists");
+                goToHome();
+              }
+              else{
+                print("Creating root");
+                await fb.createRoot();
+                goToHome();
+              }*/
+              goToHome(route);           
             }
           }
         }
       }
       else{
-        Route route =  new MaterialPageRoute(builder: (context) => new HomePage());
-        Navigator.push(context,route);
+        goToHome(route);
       }
     }
     on FirebaseAuthException catch(e) {
@@ -154,7 +163,9 @@ class _LoginPageState extends State<LoginPage>{
 
   void _signup_pressed(){
     Route route =  new MaterialPageRoute(builder: (context) => new SignUpPage());
-    Navigator.push(context,route);
+    Navigator.push(context,route).then((_){
+      //user.reload();
+    });
   }
 
   void autoLogin(){
@@ -163,5 +174,9 @@ class _LoginPageState extends State<LoginPage>{
       /*Route route =  new MaterialPageRoute(builder: (context) => new HomePage());
       Navigator.push(context,route);*/
     }
+  }
+
+  void goToHome(Route route){
+    Navigator.push(context,route);
   }
 }

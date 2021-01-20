@@ -31,14 +31,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState(){
-    // refreshInventory(_currentGauge);
     _gaugeMenuItems = getDropDownMenuItems(gaugeList);
     _currentGauge = _gaugeMenuItems[0].value;
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _refreshKey.show(); // GlobalKey<RefreshIndicator> _refreshKey = GlobalKey<RefreshIndicator>();
-    // });
-
     super.initState();    
   }
 
@@ -56,6 +50,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     User user = FirebaseAuth.instance.currentUser;
+    String name;
+    if(user.displayName != null){
+      name = user.displayName;
+    }
+    else{
+      name = "";
+    }
     return Scaffold(
       drawer: Drawer(
         child: Column(
@@ -87,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         SizedBox(height: 16,),
                         Text(
-                          user.displayName,
+                          name,
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white,
@@ -127,6 +128,7 @@ class _HomePageState extends State<HomePage> {
       body: FutureBuilder<List<Rail>>( // RefreshIndicator
         future: refreshInventory(),
         builder: (context, snapshot) {
+          print(snapshot.data);
           if (snapshot.hasData) {
             return ListView.builder(
               itemCount : snapshot.data?.length ?? 0,
@@ -146,7 +148,8 @@ class _HomePageState extends State<HomePage> {
             );
           }
           else {
-            return Center(child: CircularProgressIndicator(backgroundColor: Colors.red,));
+            return Center(child: Text("No track of this gauge in the database"),);
+            //return Center(child: CircularProgressIndicator(backgroundColor: Colors.red,));
           }
         }
       ),
