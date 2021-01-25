@@ -17,7 +17,6 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage>{
   
   final _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffold = GlobalKey<ScaffoldState>();
 
   final usernameCtrlr = TextEditingController();
   final passwordCtrlr = TextEditingController();
@@ -28,7 +27,6 @@ class _SignUpPageState extends State<SignUpPage>{
     return Form(
       key: _formKey,
       child: Scaffold(
-        key: _scaffold,
         body: Container(
           padding: EdgeInsets.all(16),
           child: ListView(

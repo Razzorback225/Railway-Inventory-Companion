@@ -1,25 +1,47 @@
 import 'package:flutter/material.dart';
 import '../models/rail.dart';
 
-class RailInfo extends StatelessWidget {
-  // Declare a field that holds the Todo.
+class RailInfo extends StatefulWidget {
+
+  RailInfo({Key key, @required this.rail, @required this.displayType}) : super(key: key);
+
   final Rail rail;
   final bool displayType;
 
-  // In the constructor, require a Todo.
-  RailInfo({Key key, @required this.rail, @required this.displayType}) : super(key: key);
+  @override
+  _RailInfoState createState() => _RailInfoState();
+}
+
+class _RailInfoState extends State<RailInfo> {
+  
+  Rail rail;
+
+  bool displayType; 
+  
+  @override
+  void initState(){
+    rail = widget.rail;
+    displayType = widget.displayType;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     // Use the Todo to create the UI.
     return Scaffold(
       appBar: AppBar(
-        title: Text(rail.partNumber),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.rail.partNumber, style: TextStyle(fontSize: 20),),
+            Text(rail.partDesc, style: TextStyle(fontSize: 14),),
+          ],
+        ),
         backgroundColor: Colors.red,
       ),
       body: Container(
         padding: EdgeInsets.all(16),
-        child: Column(       
+        child: ListView(
           children: [
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
@@ -27,33 +49,43 @@ class RailInfo extends StatelessWidget {
                 image: NetworkImage("https://rimatour.com/wp-content/uploads/2017/09/No-image-found.jpg"),
               ),         
             ),
-            Text("Gauge", style: TextStyle(fontSize: 18),),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: rail.partQuantity),
-            ),
-            SizedBox(height: 16,),
-            Text("Quantity", style: TextStyle(fontSize: 18),),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: rail.partQuantity
+            ListTile(
+              title: Text("Brand", style: TextStyle(fontSize: 18),),
+              subtitle: TextField(
+                enabled: false,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: rail.partBrand),
               ),
             ),
-            SizedBox(height: 16,),
+            ListTile(
+              title: Text("Gauge", style: TextStyle(fontSize: 18),),
+              subtitle: TextField(
+                enabled: false,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: rail.partGauge),
+              ),
+            ),
+            ListTile(
+              title: Text("Quantity", style: TextStyle(fontSize: 18),),
+              subtitle: TextField(
+                enabled: false,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: rail.partQuantity),
+              ),
+            ),
             Visibility(
               visible: displayType,
-              child: Column(
-                children: [
-                  Text("Rail type", style: TextStyle(fontSize: 18),),
-                  TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: rail.partType
-                    ),
-                  ),
-                ],
+              child: ListTile(
+                title: Text("Rail type", style: TextStyle(fontSize: 18),),
+                subtitle: TextField(
+                  enabled: false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: rail.partType),
+                ),
               ),
             ),
           ],

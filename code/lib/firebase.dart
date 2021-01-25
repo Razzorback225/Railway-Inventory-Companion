@@ -7,18 +7,6 @@ class Firebase {
   User user = FirebaseAuth.instance.currentUser;
   final databaseReference = FirebaseDatabase.instance.reference();
 
-  Future<bool> checkRootExist() async {
-    //TODO : Add root checking verification
-    await databaseReference.child(user.uid).once().then((DataSnapshot snapshot){
-      if(snapshot.value != null){
-        return true;
-      }
-      else{
-        return false;
-      }
-    });
-  }
-
   Future<void> createRoot() async {
     await databaseReference.child(user.uid).set("Marklin");
   }
@@ -31,10 +19,19 @@ class Firebase {
       for(String trackType in typeList) {
         await databaseReference.child(user.uid).child("Marklin").child(gauge).child(trackType).once().then((DataSnapshot snapshot) {
           if(snapshot.value != null) {
-            Map<String, int> buffer = new Map.from(snapshot.value);  
+            Map<String, dynamic> buffer = new Map.from(snapshot.value);  
             
             for (String part in buffer.keys) {
-                items.add(Rail(part, gauge, trackType, buffer[part].toString()));
+                items.add(Rail(
+                  part, 
+                  gauge, 
+                  trackType, 
+                  buffer[part]["Quantity"].toString(), 
+                  "Marklin", 
+                  buffer[part]["Description"],
+                  buffer[part]["Picture"]
+                )
+              );
             }
           }
         });
@@ -49,10 +46,19 @@ class Firebase {
     else{
       await databaseReference.child(user.uid).child("Marklin").child(gauge).once().then((DataSnapshot snapshot) {
         if(snapshot.value != null) {
-          Map<String, int> buffer = new Map.from(snapshot.value);
+          Map<String, dynamic> buffer = new Map.from(snapshot.value);
           
           for (String part in buffer.keys) {
-              items.add(Rail(part, gauge, "N/A", buffer[part].toString()));
+              items.add(Rail(
+                part, 
+                gauge, 
+                "N/A", 
+                buffer[part]["Quantity"].toString(), 
+                "Marklin", 
+                buffer[part]["Description"],
+                buffer[part]["Picture"]
+              )
+            );
           } 
           return items; 
         }
@@ -67,10 +73,10 @@ class Firebase {
     var path = databaseReference.child(user.uid).child("Marklin").child(gauge);
 
     if(gauge != "HO"){
-      path.child(partNumber).set(quantity);
+      path.child(partNumber).child("Quantity").set(quantity);
     }
     else {
-      path.child(trackType).child(partNumber).set(quantity);
+      path.child(trackType).child(partNumber).child("Quantity").set(quantity);
     }    
   }
 }

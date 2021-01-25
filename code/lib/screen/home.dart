@@ -22,8 +22,9 @@ class _HomePageState extends State<HomePage> {
   Firebase fb = new Firebase();
 
   final List<String> gaugeList = ["1", "HO", "Z"];
-  List<DropdownMenuItem<String>> _gaugeMenuItems;
   String _currentGauge;
+  int _currentIndex;
+  int _tryCount;
 
   bool displayType = false;
 
@@ -31,20 +32,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState(){
-    _gaugeMenuItems = getDropDownMenuItems(gaugeList);
-    _currentGauge = _gaugeMenuItems[0].value;
+    _tryCount = 1;
+    _currentIndex = 0;
+    _currentGauge = gaugeList[_currentIndex];
     super.initState();    
-  }
-
-  List<DropdownMenuItem<String>> getDropDownMenuItems(List itemList){
-    List<DropdownMenuItem<String>> items = new List();
-    for(String item in itemList){
-      items.add(new DropdownMenuItem(
-        value: item,
-        child: new Text(item),
-      ));
-    }
-    return items;
   }
 
   @override
@@ -115,20 +106,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Rail Inventory Companion'),
         backgroundColor: Colors.red,
-        actions: [
-          DropdownButton(
-            value : _currentGauge,
-            items: _gaugeMenuItems,
-            onChanged: _gaugeChanged,
-            dropdownColor: Colors.red,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-        ],
       ),
       body: FutureBuilder<List<Rail>>( // RefreshIndicator
         future: refreshInventory(),
         builder: (context, snapshot) {
-          print(snapshot.data);
           if (snapshot.hasData) {
             return ListView.builder(
               itemCount : snapshot.data?.length ?? 0,
@@ -136,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                   return Card(
                     child: ListTile(
                       title: Text(snapshot.data[index].partNumber),
-                      subtitle: Text("Quantity: ${snapshot.data[index].partQuantity}\nType: ${snapshot.data[index].partType}"),
+                      subtitle: Text("Quantity: ${snapshot.data[index].partQuantity}\nBrand: ${snapshot.data[index].partBrand}"),
                       isThreeLine: true,
                       onTap: (){
                         Route route = MaterialPageRoute(builder: (context) => new RailInfo(rail: _railList[index], displayType: displayType));
@@ -148,13 +129,41 @@ class _HomePageState extends State<HomePage> {
             );
           }
           else {
-            return Center(child: Text("No track of this gauge in the database"),);
-            //return Center(child: CircularProgressIndicator(backgroundColor: Colors.red,));
+            if(_tryCount >= 3){
+              return Center(child: Text("No $_currentGauge tracks in the database"),);
+            }
+            else{
+              _tryCount++;
+              print("Try : $_tryCount");
+              return Column(children: [LinearProgressIndicator(backgroundColor: Colors.red,)],);
+            }
           }
         }
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: _gaugeChanged,
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.white,
+        backgroundColor: Colors.red,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.train),
+            label: "1"
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.train),
+            label: "HO"
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.train),
+            label: "Z"
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: addNewRail,
+        onPressed: (){
+          addNewRail();
+        },
         tooltip: 'Add Rail',
         child: Icon(Icons.add),
         backgroundColor: Colors.red,
@@ -164,7 +173,9 @@ class _HomePageState extends State<HomePage> {
 
   void addNewRail(){
     Route route =  new MaterialPageRoute(builder: (context) => new NewRailPage());
-    Navigator.push(context,route).then((_) => refreshInventory());
+    Navigator.push(context,route).then((_) async{ 
+      await refreshInventory();
+      });
   }
 
   void logOut(){
@@ -181,15 +192,18 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(context, route);
   }
 
-  void _gaugeChanged(String selectedGauge) {
-    _currentGauge = selectedGauge;
+  void _gaugeChanged(int selectedGauge) async{
+    _currentGauge = gaugeList[selectedGauge];
     if(_currentGauge != "HO"){
       displayType = false;
     }  
     else{
       displayType = true;
     }
-    refreshInventory().then((_) => setState(() {}));    
+    await refreshInventory().then((_) => setState(() {
+      _currentIndex = selectedGauge;
+      _tryCount = 1;
+    }));    
   }
 
   Future<List<Rail>> refreshInventory() async {
