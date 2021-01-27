@@ -60,12 +60,15 @@ class Firebase {
               )
             );
           } 
-          return items; 
-        }
-        else {
-          return null;
         }
       });
+      print("firebase.dart : $items");
+      if(items.length > 0){
+        return items;
+      }
+      else {
+        return null;
+      }
     }
   }
 
@@ -78,5 +81,9 @@ class Firebase {
     else {
       path.child(trackType).child(partNumber).child("Quantity").set(quantity);
     }    
+  }
+
+  void deleteItem(String gauge, String partNumber){
+    databaseReference.child(user.uid).child("Marklin").child(gauge).child(partNumber).remove();
   }
 }

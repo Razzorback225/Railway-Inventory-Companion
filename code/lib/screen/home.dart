@@ -1,3 +1,5 @@
+import 'package:manul/screen/dialog/dialog.dart';
+
 import '../firebase.dart';
 import 'newRail.dart';
 import 'login/login.dart';
@@ -111,8 +113,10 @@ class _HomePageState extends State<HomePage> {
         future: refreshInventory(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            _tryCount = 1;
             return ListView.builder(
               itemCount : snapshot.data?.length ?? 0,
+              padding: EdgeInsets.all(16),
               itemBuilder: (context, index) {
                   return Card(
                     child: ListTile(
@@ -123,19 +127,19 @@ class _HomePageState extends State<HomePage> {
                         Route route = MaterialPageRoute(builder: (context) => new RailInfo(rail: _railList[index], displayType: displayType));
                         Navigator.push(context, route);
                       },
+                      onLongPress: () => deleteItem(index),
                     ),
                   );
               },
             );
           }
           else {
-            if(_tryCount >= 3){
+            if(_tryCount >= 2){
               return Center(child: Text("No $_currentGauge tracks in the database"),);
             }
             else{
               _tryCount++;
-              print("Try : $_tryCount");
-              return Column(children: [LinearProgressIndicator(backgroundColor: Colors.red,)],);
+              return Center(child: CircularProgressIndicator(backgroundColor: Colors.red,),);
             }
           }
         }
@@ -167,8 +171,17 @@ class _HomePageState extends State<HomePage> {
         tooltip: 'Add Rail',
         child: Icon(Icons.add),
         backgroundColor: Colors.red,
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
+  }
+
+  void deleteItem(int index) async{
+    ChooseDialog delItemDialog = new ChooseDialog(context);
+    int result = await delItemDialog.showChooseDialog("Remove item", "Are you sure you want to remove this item?", "Yes", "No", false);
+
+    if(result == 1){
+      fb.deleteItem(_currentGauge, _railList[index].partNumber);
+    }
   }
 
   void addNewRail(){

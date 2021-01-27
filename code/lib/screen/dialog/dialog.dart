@@ -80,3 +80,52 @@ class EntryDialog {
   }
 }
 
+class ChooseDialog {
+  BuildContext ctxt;
+
+  ChooseDialog(this.ctxt);
+
+  Future<int> showChooseDialog(String title, String message, String choice1, String choice2, bool isCancellable) async{
+
+    return showDialog<int>(
+      context: ctxt,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+                SizedBox(height: 16,),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(1),
+                  child : Text(choice1),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(2),
+                  child : Text(choice2),
+                ),
+                Visibility(
+                  visible: isCancellable,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(0),
+                    child : Text("Cancel"),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
