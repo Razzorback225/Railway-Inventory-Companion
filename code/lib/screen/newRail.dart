@@ -1,11 +1,11 @@
-import '../firebase.dart';
+import '../database.dart';
 import 'package:flutter/material.dart';
 import 'dialog/dialog.dart';
 
 class NewRailPage extends StatefulWidget {
-  NewRailPage({Key key, this.title}) : super(key: key);
+  NewRailPage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _NewRailPageState createState() => _NewRailPageState();
@@ -13,7 +13,7 @@ class NewRailPage extends StatefulWidget {
 
 class _NewRailPageState extends State<NewRailPage>{
 
-  Firebase fb = new Firebase();
+  Database fb = new Database();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -23,20 +23,20 @@ class _NewRailPageState extends State<NewRailPage>{
   bool _isVisible = false;
 
   List _trackTypes = ["Please select a track type", "M-Track", "K-Track", "C-Track"];
-  List<DropdownMenuItem<String>> _trTypeDropDownMenu;
-  String _currentTrackType;
+  late List<DropdownMenuItem<String>> _trTypeDropDownMenu;
+  late String _currentTrackType;
 
   List _gauges = ["Please select the gauge","1","HO","Z"];
-  List<DropdownMenuItem<String>> _gaugeDropDownMenu;
-  String _currentGauge;
+  late List<DropdownMenuItem<String>> _gaugeDropDownMenu;
+  late String _currentGauge;
 
   @override
   void initState(){
     _trTypeDropDownMenu = getDropDownMenuItems(_trackTypes);
-    _currentTrackType = _trTypeDropDownMenu[0].value;
+    _currentTrackType = _trTypeDropDownMenu[0].value as String;
 
     _gaugeDropDownMenu = getDropDownMenuItems(_gauges);
-    _currentGauge = _gaugeDropDownMenu[0].value;
+    _currentGauge = _gaugeDropDownMenu[0].value as String;
     super.initState();
   }
 
@@ -48,7 +48,7 @@ class _NewRailPageState extends State<NewRailPage>{
   }
 
   List<DropdownMenuItem<String>> getDropDownMenuItems(List itemList){
-    List<DropdownMenuItem<String>> items = new List();
+    List<DropdownMenuItem<String>> items = new List.empty();
     for(String item in itemList){
       items.add(new DropdownMenuItem(
         value: item,
@@ -85,8 +85,10 @@ class _NewRailPageState extends State<NewRailPage>{
                   labelText: 'Part number',
                 ),
                 validator: (value){
-                  if(value.isEmpty){
-                    return 'Please enter a valid part number';
+                  if(value != null){
+                    if(value.isEmpty){
+                      return 'Please enter a valid part number';
+                    }
                   }
                   return null;
                 },
@@ -107,8 +109,10 @@ class _NewRailPageState extends State<NewRailPage>{
                   labelText: 'Quantity'
                 ),
                 validator: (value){
-                  if(value.isEmpty){
-                    return 'Please enter a quantity (min 0)';
+                  if(value != null){
+                    if(value.isEmpty){
+                      return 'Please enter a quantity (min 0)';
+                    }
                   }
                   return null;
                 },
@@ -130,9 +134,9 @@ class _NewRailPageState extends State<NewRailPage>{
     );
   }
 
-  void gaugeDropDownMenu_change(String selectedGauge){
+  void gaugeDropDownMenu_change(String? selectedGauge){
     setState(() {
-      _currentGauge = selectedGauge;
+      _currentGauge = selectedGauge as String;
       if(_currentGauge == "HO"){
         _isVisible = true;
       }
@@ -142,15 +146,15 @@ class _NewRailPageState extends State<NewRailPage>{
     });
   }
 
-  void trTypeDropDownMenu_change(String selectedTrackType){
+  void trTypeDropDownMenu_change(String? selectedTrackType){
     setState(() {
-      _currentTrackType = selectedTrackType;
+      _currentTrackType = selectedTrackType as String;
     });
   }
 
   Future validateNewRail() async{
     MessageDialog errorD = new MessageDialog(context);
-    if(_formKey.currentState.validate()){
+    if(_formKey.currentState!.validate()){
       switch(_currentGauge){
         case "1" :
           createRail();

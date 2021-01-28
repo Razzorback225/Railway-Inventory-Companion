@@ -3,10 +3,10 @@ import '../models/rail.dart';
 
 class RailInfo extends StatefulWidget {
 
-  RailInfo({Key key, @required this.rail, @required this.displayType}) : super(key: key);
+  Rail? rail;
+  bool? displayType;
 
-  final Rail rail;
-  final bool displayType;
+  RailInfo({Key? key, @required this.rail, @required this.displayType}) : super(key: key);
 
   @override
   _RailInfoState createState() => _RailInfoState();
@@ -14,14 +14,14 @@ class RailInfo extends StatefulWidget {
 
 class _RailInfoState extends State<RailInfo> {
   
-  Rail rail;
+  late Rail rail;
 
-  bool displayType; 
+  late bool displayType; 
   
   @override
   void initState(){
-    rail = widget.rail;
-    displayType = widget.displayType;
+    rail = widget.rail as Rail;
+    displayType = widget.displayType as bool;
     super.initState();
   }
 
@@ -33,7 +33,7 @@ class _RailInfoState extends State<RailInfo> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.rail.partNumber, style: TextStyle(fontSize: 20),),
+            Text(widget.rail!.partNumber, style: TextStyle(fontSize: 20),),
             Text(rail.partDesc, style: TextStyle(fontSize: 14),),
           ],
         ),

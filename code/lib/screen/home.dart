@@ -1,6 +1,5 @@
 import 'package:manul/screen/dialog/dialog.dart';
-
-import '../firebase.dart';
+import '../database.dart';
 import 'newRail.dart';
 import 'login/login.dart';
 import 'account.dart';
@@ -9,11 +8,12 @@ import 'railInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../icons/ric_icons_icons.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.title}) : super(key: key);
+  HomePage({Key? key, this.title}) : super(key: key);
   
-  final String title;
+  final String? title;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -21,12 +21,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   
-  Firebase fb = new Firebase();
+  Database fb = new Database();
 
   final List<String> gaugeList = ["1", "HO", "Z"];
-  String _currentGauge;
-  int _currentIndex;
-  int _tryCount;
+  late String _currentGauge;
+  late int _currentIndex;
+  late int _tryCount;
 
   bool displayType = false;
 
@@ -120,8 +120,8 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                   return Card(
                     child: ListTile(
-                      title: Text(snapshot.data[index].partNumber),
-                      subtitle: Text("Quantity: ${snapshot.data[index].partQuantity}\nBrand: ${snapshot.data[index].partBrand}"),
+                      title: Text(snapshot.data![index].partNumber),
+                      subtitle: Text("Quantity: ${snapshot.data![index].partQuantity}\nBrand: ${snapshot.data![index].partBrand}"),
                       isThreeLine: true,
                       onTap: (){
                         Route route = MaterialPageRoute(builder: (context) => new RailInfo(rail: _railList[index], displayType: displayType));
@@ -151,15 +151,15 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.red,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.train),
+            icon: Icon(RicIcons.oneGauge),
             label: "1"
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.train),
+            icon: Icon(RicIcons.hoGauge),
             label: "HO"
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.train),
+            icon: Icon(RicIcons.zGauge),
             label: "Z"
           ),
         ],
@@ -177,7 +177,7 @@ class _HomePageState extends State<HomePage> {
 
   void deleteItem(int index) async{
     ChooseDialog delItemDialog = new ChooseDialog(context);
-    int result = await delItemDialog.showChooseDialog("Remove item", "Are you sure you want to remove this item?", "Yes", "No", false);
+    int result = await delItemDialog.showChooseDialog("Remove item", "Are you sure you want to remove this item?", "Yes", "No", false) as int;
 
     if(result == 1){
       fb.deleteItem(_currentGauge, _railList[index].partNumber);

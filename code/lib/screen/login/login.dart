@@ -4,12 +4,11 @@ import '../home.dart';
 import 'signup.dart';
 import '../dialog/dialog.dart';
 import 'dart:async';
-import '../../firebase.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.title}) : super(key: key);
+  LoginPage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -124,7 +123,7 @@ class _LoginPageState extends State<LoginPage>{
             }
             else{
               EntryDialog nameDialog = new EntryDialog(context);
-              String name = await nameDialog.showEntryDialog("Full name (optionnal)", "If you want you can provide your full name.\nThis will help us to know who you are", "Full name","John Doe", "Ok");
+              String name = await nameDialog.showEntryDialog("Full name (optionnal)", "If you want you can provide your full name.\nThis will help us to know who you are", "Full name","John Doe", "Ok") as String;
               if(name.isNotEmpty){
                 user.updateProfile(
                   displayName: name

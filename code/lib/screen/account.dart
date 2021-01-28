@@ -4,9 +4,9 @@ import 'dialog/dialog.dart';
 //import '../firebase/auth.dart';
 
 class AccountPage extends StatefulWidget {
-  AccountPage({Key key, this.title})  : super(key: key);
+  AccountPage({Key? key, this.title})  : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _AccountPageState createState() => _AccountPageState();
@@ -77,18 +77,18 @@ class _AccountPageState extends State<AccountPage> {
 
   Future updateName() async{
     EntryDialog nameDialog = new EntryDialog(context);
-    String name = await nameDialog.showEntryDialog("Name update", "Please enter your new name", "Name", "", "Validate");
+    String name = await nameDialog.showEntryDialog("Name update", "Please enter your new name", "Name", "", "Validate") as String;
 
-    if(name != null && name != ""){
+    if(name != ""){
       user.updateProfile(displayName: name);
     }
   }
 
   Future updateEmail() async{
     EntryDialog emailDialog = new EntryDialog(context);
-    String email = await emailDialog.showEntryDialog("Email update", "Please enter your new E-Mail address", "E-mail", "", "Validate");
+    String email = await emailDialog.showEntryDialog("Email update", "Please enter your new E-Mail address", "E-mail", "", "Validate") as String;
 
-    if(email != null && email.isNotEmpty && email.contains('@')){
+    if(email.isNotEmpty && email.contains('@')){
       user.verifyBeforeUpdateEmail(email);
     }
   }

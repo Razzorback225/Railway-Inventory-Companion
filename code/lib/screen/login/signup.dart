@@ -6,9 +6,9 @@ import '../dialog/dialog.dart';
 import 'login.dart';
 
 class SignUpPage extends StatefulWidget {
-  SignUpPage({Key key, this.title}) : super(key: key);
+  SignUpPage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _SignUpPageState createState() => _SignUpPageState();
@@ -35,13 +35,15 @@ class _SignUpPageState extends State<SignUpPage>{
               TextFormField(
                 controller: usernameCtrlr,
                 validator: (value) {
-                  if(value.isNotEmpty){
-                    if(!value.contains('@')){
-                      return 'Please enter a valid email';
+                  if(value != null){
+                    if(value.isNotEmpty){
+                      if(!value.contains('@')){
+                        return 'Please enter a valid email';
+                      }
                     }
-                  }
-                  else{
-                    return 'Please provide an email to continue';
+                    else{
+                      return 'Please provide an email to continue';
+                    }
                   }
                   return null;
                 },
@@ -55,13 +57,15 @@ class _SignUpPageState extends State<SignUpPage>{
               TextFormField(
                 controller: passwordCtrlr,
                 validator: (value){
-                  if(value.isNotEmpty){
-                    if(value.length < 8){
-                      return 'Your password is to short';
+                  if(value != null){
+                    if(value.isNotEmpty){
+                      if(value.length < 8){
+                        return 'Your password is to short';
+                      }
                     }
-                  }
-                  else{
-                    return 'Please provide a password to continue';
+                    else{
+                      return 'Please provide a password to continue';
+                    }
                   }
                   return null;
                 },
@@ -76,13 +80,15 @@ class _SignUpPageState extends State<SignUpPage>{
               TextFormField(
                 controller: passwordRptCtrlr,
                 validator: (value){
-                  if(value.isNotEmpty){
-                    if(value != passwordCtrlr.text){
-                      return 'Password doesn\'t match the one above';
+                  if(value != null){
+                    if(value.isNotEmpty){
+                      if(value != passwordCtrlr.text){
+                        return 'Password doesn\'t match the one above';
+                      }
                     }
-                  }
-                  else{
-                    return 'Please repeat the password entered above';
+                    else{
+                      return 'Please repeat the password entered above';
+                    }
                   }
                   return null;
                 },
@@ -120,7 +126,7 @@ class _SignUpPageState extends State<SignUpPage>{
   }
 
   Future validateSignUp() async{
-    if(_formKey.currentState.validate()){
+    if(_formKey.currentState!.validate()){
       FirebaseAuth auth = FirebaseAuth.instance;
       MessageDialog errorDialog = new MessageDialog(context);
       try {

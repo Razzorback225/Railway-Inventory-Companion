@@ -40,11 +40,11 @@ class EntryDialog {
 
   EntryDialog(this.ctxt);
 
-  Future<String> showEntryDialog(String title, String message, String entryLabel, String entryHint, String buttonText) async{
+  Future<String?> showEntryDialog(String title, String message, String entryLabel, String entryHint, String buttonText) async{
     
     final textFieldCtrlr = TextEditingController();
     
-    return showDialog<String>(
+    return showDialog<String?>(
       context: ctxt,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
@@ -85,9 +85,9 @@ class ChooseDialog {
 
   ChooseDialog(this.ctxt);
 
-  Future<int> showChooseDialog(String title, String message, String choice1, String choice2, bool isCancellable) async{
+  Future<int?> showChooseDialog(String title, String message, String choice1, String choice2, bool isCancellable) async{
 
-    return showDialog<int>(
+    return showDialog<int?>(
       context: ctxt,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
