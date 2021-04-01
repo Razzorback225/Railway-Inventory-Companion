@@ -134,17 +134,18 @@ class _SignUpPageState extends State<SignUpPage>{
           email: usernameCtrlr.text, 
           password: passwordCtrlr.text
           ).then((_)async{
-            User user = auth.currentUser;
-            user.sendEmailVerification();
+            User? user = auth.currentUser;
+            user?.sendEmailVerification();
             MessageDialog popup = new MessageDialog(context);
-            await popup.showMessageDialog('Check your mails', 'An email has been sent to ${user.email}.\nPlease verify this email to connect to the app').then((_) {
+            await popup.showMessageDialog('Check your mails', 'An email has been sent to ${user?.email}.\nPlease verify this email to connect to the app').then((_) {
               Route vRoute = MaterialPageRoute(builder: (context) => LoginPage());
               Navigator.of(context).pushReplacement(vRoute);          
             });
           });      
       }
       on FirebaseAuthException catch(e) {
-        await errorDialog.showMessageDialog("Authentification error", e.message);
+        //TODO :
+        await errorDialog.showMessageDialog("Authentification error", e.message??"To replace");
       }
     }
   }

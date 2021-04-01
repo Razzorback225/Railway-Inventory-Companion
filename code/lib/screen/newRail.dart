@@ -48,7 +48,8 @@ class _NewRailPageState extends State<NewRailPage>{
   }
 
   List<DropdownMenuItem<String>> getDropDownMenuItems(List itemList){
-    List<DropdownMenuItem<String>> items = new List.empty();
+    List<DropdownMenuItem<String>> items;
+    items = [];
     for(String item in itemList){
       items.add(new DropdownMenuItem(
         value: item,

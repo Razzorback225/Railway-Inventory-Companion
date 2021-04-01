@@ -5,11 +5,14 @@ import 'models/rail.dart';
 class Database {
 
   Database();
-  User user = FirebaseAuth.instance.currentUser;
+  User? user = FirebaseAuth.instance.currentUser;
   final databaseReference = FirebaseDatabase.instance.reference();
 
+  int hoCounter = 0;
+  int otherCounter = 0;
+
   Future<void> createRoot() async {
-    await databaseReference.child(user.uid).set("Marklin");
+    await databaseReference.child(user?.uid).set("Marklin");
   }
 
   Future<dynamic> readInventory(String gauge) async{
@@ -18,7 +21,7 @@ class Database {
 
     if(gauge == "HO"){
       for(String trackType in typeList) {
-        await databaseReference.child(user.uid).child("Marklin").child(gauge).child(trackType).once().then((DataSnapshot snapshot) {
+        await databaseReference.child(user?.uid).child("Marklin").child(gauge).child(trackType).once().then((DataSnapshot snapshot) {
           if(snapshot.value != null) {
             Map<String, dynamic> buffer = new Map.from(snapshot.value);  
             
@@ -37,7 +40,9 @@ class Database {
           }
         });
       }
+      hoCounter++;
       if(items.length > 0){
+        print("firebase.dart : $gauge counter : $hoCounter");
         return items;
       }
       else{
@@ -45,7 +50,7 @@ class Database {
       }
     }
     else{
-      await databaseReference.child(user.uid).child("Marklin").child(gauge).once().then((DataSnapshot snapshot) {
+      await databaseReference.child(user?.uid).child("Marklin").child(gauge).once().then((DataSnapshot snapshot) {
         if(snapshot.value != null) {
           Map<String, dynamic> buffer = new Map.from(snapshot.value);
           
@@ -63,8 +68,9 @@ class Database {
           } 
         }
       });
-      print("firebase.dart : $items");
+      otherCounter++;
       if(items.length > 0){
+        print("firebase.dart : $gauge counter : $otherCounter");
         return items;
       }
       else{
@@ -73,19 +79,19 @@ class Database {
     }
   }
 
-  void pushNR(String partNumber, String gauge, int quantity, String trackType){
-    var path = databaseReference.child(user.uid).child("Marklin").child(gauge);
+  void pushNR(String partNumber, String gauge, int quantity, String trackType)async{
+    var path = databaseReference.child(user?.uid).child("Marklin").child(gauge);
 
     if(gauge != "HO"){
-      path.child(partNumber).child("Quantity").set(quantity);
+      await path.child(partNumber).child("Quantity").set(quantity);
     }
     else {
-      path.child(trackType).child(partNumber).child("Quantity").set(quantity);
+      await path.child(trackType).child(partNumber).child("Quantity").set(quantity);
     }    
   }
 
   void deleteItem(String gauge, String partNumber) async{
-    await databaseReference.child(user.uid).child("Marklin").child(gauge).child(partNumber).remove();
+    await databaseReference.child(user?.uid).child("Marklin").child(gauge).child(partNumber).remove();
   }
 
   void updateItem(Rail rail)async{
@@ -93,6 +99,6 @@ class Database {
     data["Quantity"] = rail.partQuantity;
     data["Picture"] = rail.partImageUrl;
     data["Description"] = rail.partDesc;
-    await databaseReference.child(user.uid).child(rail.partBrand).child(rail.partGauge).child(rail.partNumber).update(data);
+    await databaseReference.child(user?.uid).child(rail.partBrand).child(rail.partGauge).child(rail.partNumber).update(data);
   }
 }

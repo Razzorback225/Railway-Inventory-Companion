@@ -42,14 +42,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    User user = FirebaseAuth.instance.currentUser;
-    String name;
-    if(user.displayName != null){
-      name = user.displayName;
+    User? user = FirebaseAuth.instance.currentUser;
+    String name = user?.displayName ?? "";
+    /*
+    if(user?.displayName != null){
+      name = user!.displayName!;
     }
     else{
       name = "";
-    }
+    }*/
     return Scaffold(
       drawer: Drawer(
         child: Column(
@@ -151,15 +152,15 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.red,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(RicIcons.oneGauge),
+            icon: Icon(Icons.train),
             label: "1"
           ),
           BottomNavigationBarItem(
-            icon: Icon(RicIcons.hoGauge),
+            icon: Icon(Icons.train),
             label: "HO"
           ),
           BottomNavigationBarItem(
-            icon: Icon(RicIcons.zGauge),
+            icon: Icon(Icons.train),
             label: "Z"
           ),
         ],
@@ -213,9 +214,9 @@ class _HomePageState extends State<HomePage> {
     else{
       displayType = true;
     }
+    _currentIndex = selectedGauge;
+    _tryCount = 1;
     await refreshInventory().then((_) => setState(() {
-      _currentIndex = selectedGauge;
-      _tryCount = 1;
     }));    
   }
 

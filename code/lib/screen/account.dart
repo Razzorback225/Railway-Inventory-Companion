@@ -18,7 +18,7 @@ class _AccountPageState extends State<AccountPage> {
   final newPwdCtrlr = TextEditingController();
   final newPwdRptCtrlr = TextEditingController();
 
-  User user = FirebaseAuth.instance.currentUser;
+  User? user = FirebaseAuth.instance.currentUser;
 
   @override
   void dispose(){
@@ -50,7 +50,7 @@ class _AccountPageState extends State<AccountPage> {
             TextField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: user.email,
+                labelText: user?.email,
               ),
               enabled: false,
             ),
@@ -64,7 +64,7 @@ class _AccountPageState extends State<AccountPage> {
             TextField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: user.displayName,
+                labelText: user?.displayName,
               ),
               enabled: false,
             ),
@@ -80,7 +80,7 @@ class _AccountPageState extends State<AccountPage> {
     String name = await nameDialog.showEntryDialog("Name update", "Please enter your new name", "Name", "", "Validate") as String;
 
     if(name != ""){
-      user.updateProfile(displayName: name);
+      user?.updateProfile(displayName: name);
     }
   }
 
@@ -89,7 +89,7 @@ class _AccountPageState extends State<AccountPage> {
     String email = await emailDialog.showEntryDialog("Email update", "Please enter your new E-Mail address", "E-mail", "", "Validate") as String;
 
     if(email.isNotEmpty && email.contains('@')){
-      user.verifyBeforeUpdateEmail(email);
+      user?.verifyBeforeUpdateEmail(email);
     }
   }
 }

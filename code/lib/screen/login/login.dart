@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage>{
   final usernameCtrlr = TextEditingController();
   final passwordCtrlr = TextEditingController();
   
-  User user = FirebaseAuth.instance.currentUser;
+  User? user = FirebaseAuth.instance.currentUser;
 
   bool rememberMe = false;
 
@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage>{
   @override
   Widget build(BuildContext ctxt) {
     return Scaffold(
-      body: Center(
+      body:Center(
         child: Container(
           padding: EdgeInsets.all(16),
           child: Column(
@@ -110,38 +110,36 @@ class _LoginPageState extends State<LoginPage>{
     //User user = auth.currentUser;
     try {
       if(user == null){
-        UserCredential creds = await auth.signInWithEmailAndPassword(email: usernameCtrlr.text, password: passwordCtrlr.text);
+        await auth.signInWithEmailAndPassword(email: usernameCtrlr.text, password: passwordCtrlr.text);
 
-        if(creds != null){
-          user = auth.currentUser;
-          if (!user.emailVerified) {
-            errorDialog.showMessageDialog("Email not yet verified", "Please verified your email before signing in");
+        user = auth.currentUser;
+        if (!user!.emailVerified) {
+          errorDialog.showMessageDialog("Email not yet verified", "Please verified your email before signing in");
+        }
+        else{
+          if(user?.displayName != null){
+            goToHome(route);
           }
           else{
-            if(user.displayName != null){
-              goToHome(route);
+            EntryDialog nameDialog = new EntryDialog(context);
+            String name = await nameDialog.showEntryDialog("Full name (optionnal)", "If you want you can provide your full name.\nThis will help us to know who you are", "Full name","John Doe", "Ok") as String;
+            if(name.isNotEmpty){
+              user?.updateProfile(
+                displayName: name
+              );
+            }
+            /*
+            Firebase fb = new Firebase();
+            if(await fb.checkRootExist()){
+              print("Root exists");
+              goToHome();
             }
             else{
-              EntryDialog nameDialog = new EntryDialog(context);
-              String name = await nameDialog.showEntryDialog("Full name (optionnal)", "If you want you can provide your full name.\nThis will help us to know who you are", "Full name","John Doe", "Ok") as String;
-              if(name.isNotEmpty){
-                user.updateProfile(
-                  displayName: name
-                );
-              }
-              /*
-              Firebase fb = new Firebase();
-              if(await fb.checkRootExist()){
-                print("Root exists");
-                goToHome();
-              }
-              else{
-                print("Creating root");
-                await fb.createRoot();
-                goToHome();
-              }*/
-              goToHome(route);           
-            }
+              print("Creating root");
+              await fb.createRoot();
+              goToHome();
+            }*/
+            goToHome(route);           
           }
         }
       }
@@ -167,12 +165,13 @@ class _LoginPageState extends State<LoginPage>{
     });
   }
 
-  void autoLogin(){
-    if(user != null){
-      print(user);
-      /*Route route =  new MaterialPageRoute(builder: (context) => new HomePage());
-      Navigator.push(context,route);*/
+  Future<dynamic> autoLogin()async{
+    if(user?.uid != null){
+      return user;
     }
+    else{
+      return null;
+    } 
   }
 
   void goToHome(Route route){

@@ -45,8 +45,8 @@ class _RailInfoState extends State<RailInfo> {
           children: [
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-              child: Image(
-                image: NetworkImage("https://rimatour.com/wp-content/uploads/2017/09/No-image-found.jpg"),
+              child: Image.network(
+                "https://rimatour.com/wp-content/uploads/2017/09/No-image-found.jpg",
               ),         
             ),
             ListTile(
